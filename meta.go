@@ -25,6 +25,16 @@ import (
 	"os"
 )
 
+// EnablerFunc is a convenient way to implement Enabler around an
+// anonymous function. It is also a valid Option to pass to a logger.
+type EnablerFunc func(Level, string) bool
+
+// This allows an EnablerFunc to be used as an option.
+func (f EnablerFunc) apply(m *Meta) { m.Enabler = f }
+
+// Enabled calls the wrapped function.
+func (f EnablerFunc) Enabled(lvl Level, msg string) bool { return f(lvl, msg) }
+
 // Meta is implementation-agnostic state management for Loggers. Most Logger
 // implementations can reduce the required boilerplate by embedding a Meta.
 //
