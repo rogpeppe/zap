@@ -84,5 +84,5 @@ func (m Meta) Check(log Logger, lvl Level, msg string) *CheckedMessage {
 // problems and should not be used to report user-caused problems.
 func (m Meta) InternalError(cause string, err error) {
 	fmt.Fprintf(m.ErrorOutput, "%v %s error: %v\n", _timeNow().UTC(), cause, err)
-	m.ErrorOutput.Sync()
+	_ = m.ErrorOutput.Sync()
 }
