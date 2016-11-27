@@ -78,7 +78,33 @@ func (log *logger) With(fields ...Field) Logger {
 		Meta: log.Meta.Clone(),
 	}
 	addFields(clone.Encoder, fields)
+	log.Meta.Fields = append(log.Meta.Fields, fields)
 	return clone
+}
+
+func (log *Logger) Replace(fields ...Field) Logger {
+	clone := &logger{
+		Meta: log.Meta.Clone(),
+	}
+	copied := false
+loop:
+	for _, newf := range fields {
+		for i, f := range log.Meta.Fields {
+			if f.key == newf.key {
+				if !copied {
+					clone.Meta.Fields = make([]Field, len(log.Meta.Fields), len(log.Meta.Fields) + len(fields) -1)
+					copy(clone.Meta.Fields, log.Meta.Fields)
+					copied = true
+					replaced = true
+				}
+				clone.Meta.Fields[i] = newf
+				continue loop
+			}
+		}
+		clone.Meta.Fields = append(clone.Meta.Fields, newf)
+		copied = true
+	}
+	addFields(clone.Encoder, fields)
 }
 
 func (log *logger) Check(lvl Level, msg string) *CheckedMessage {

@@ -35,6 +35,7 @@ type Meta struct {
 
 	Development bool
 	Encoder     Encoder
+	Fields      []Field
 	Hooks       []Hook
 	Output      WriteSyncer
 	ErrorOutput WriteSyncer
@@ -60,6 +61,8 @@ func MakeMeta(enc Encoder, options ...Option) Meta {
 // the hooks (since they rarely change).
 func (m Meta) Clone() Meta {
 	m.Encoder = m.Encoder.Clone()
+	// Ensure any append will copy the fields.
+	m.Fields = m.Fields[0:len(m.Fields):len(m.Fields)]
 	return m
 }
 
